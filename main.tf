@@ -104,13 +104,6 @@ resource "aws_lb_target_group" "main" {
     },
   )
 
-  tags = {
-    Name = "${var.app_name}-elb"
-    environment  = var.app_env
-    appname = var.app_name
-    appid = var.app_id
-  }
-
   lifecycle {
     create_before_destroy = true
   }
