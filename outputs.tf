@@ -23,6 +23,7 @@ output "lb_zone_id" {
   value       = concat(aws_lb.this.*.zone_id, [""])[0] 
 }
 
+/*
 output "http_tcp_listener_arns" {
   description = "The ARN of the TCP and HTTP load balancer listeners created."
   value       = aws_lb_listener.frontend_http_tcp.*.arn
@@ -33,6 +34,7 @@ output "http_tcp_listener_ids" {
   value       = aws_lb_listener.frontend_http_tcp.*.id
 }
 
+
 output "https_listener_arns" {
   description = "The ARNs of the HTTPS load balancer listeners created."
   value       = aws_lb_listener.frontend_https.*.arn
@@ -42,6 +44,7 @@ output "https_listener_ids" {
   description = "The IDs of the load balancer listeners created."
   value       = aws_lb_listener.frontend_https.*.id
 }
+*/
 
 output "target_group_arns" {
   description = "ARNs of the target groups. Useful for passing to your Auto Scaling group."
@@ -58,11 +61,15 @@ output "target_group_names" {
   value       = aws_lb_target_group.main.*.name
 }
 
+/*
+
 output "target_group_attachments" {
   description = "ARNs of the target group attachment IDs."
   value = {
     for k, v in aws_lb_target_group_attachment.this : k => v.id
   }
 }
+
+*/
 
 

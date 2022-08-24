@@ -10,7 +10,7 @@ resource "aws_lb" "this" {
   load_balancer_type = var.load_balancer_type
   internal           = var.internal
   security_groups    = var.security_groups
-  subnets            = var.aws_subnet_ids  
+  subnets            = var.subnets  
 
   idle_timeout                     = var.idle_timeout
   enable_cross_zone_load_balancing = var.enable_cross_zone_load_balancing
