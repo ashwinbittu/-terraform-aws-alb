@@ -1,4 +1,4 @@
-resource "aws_lb" "awselb" {
+resource "aws_lb" "myalb" {
   name        = var.name
 
   load_balancer_type = var.load_balancer_type
@@ -115,7 +115,7 @@ locals {
   ])...)
 }
 
-resource "aws_lb_target_group_attachment" "awselbtg" {
+resource "aws_lb_target_group_attachment" "myalbtg" {
   for_each = { for k, v in local.target_group_attachments : k => v }
 
   target_group_arn  = aws_lb_target_group.main[each.value.tg_index].arn
@@ -573,7 +573,7 @@ resource "aws_lb_listener_rule" "http_tcp_listener_rule" {
 resource "aws_lb_listener" "frontend_http_tcp" {
   count = length(var.http_tcp_listeners) 
 
-  load_balancer_arn = aws_lb.awselb.arn
+  load_balancer_arn = aws_lb.myalb.arn
 
   port     = var.http_tcp_listeners[count.index]["port"]
   protocol = var.http_tcp_listeners[count.index]["protocol"]
@@ -621,7 +621,7 @@ resource "aws_lb_listener" "frontend_http_tcp" {
 resource "aws_lb_listener" "frontend_https" {
   count = length(var.https_listeners) 
 
-  load_balancer_arn = aws_lb.awselb.arn
+  load_balancer_arn = aws_lb.myalb.arn
 
   port            = var.https_listeners[count.index]["port"]
   protocol        = lookup(var.https_listeners[count.index], "protocol", "HTTPS")
