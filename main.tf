@@ -1,10 +1,4 @@
-locals {
-  create_lb = var.create_lb
-}
-
-resource "aws_lb" "this" {
-  count = local.create_lb ? 1 : 0
-
+resource "aws_lb" "awselb" {
   name        = var.name
 
   load_balancer_type = var.load_balancer_type
@@ -59,7 +53,7 @@ resource "aws_lb" "this" {
 
 
 resource "aws_lb_target_group" "main" {
-  count = local.create_lb ? length(var.target_groups) : 0
+  count = length(var.target_groups)
 
   name        = lookup(var.target_groups[count.index], "name", null)
 
@@ -121,8 +115,8 @@ locals {
   ])...)
 }
 
-resource "aws_lb_target_group_attachment" "this" {
-  for_each = { for k, v in local.target_group_attachments : k => v if local.create_lb }
+resource "aws_lb_target_group_attachment" "awselbtg" {
+  for_each = { for k, v in local.target_group_attachments : k => v }
 
   target_group_arn  = aws_lb_target_group.main[each.value.tg_index].arn
   target_id         = each.value.target_id
@@ -133,7 +127,7 @@ resource "aws_lb_target_group_attachment" "this" {
 }
 
 resource "aws_lb_listener_rule" "https_listener_rule" {
-  count = local.create_lb ? length(var.https_listener_rules) : 0
+  count = length(var.https_listener_rules) 
 
   listener_arn = aws_lb_listener.frontend_https[lookup(var.https_listener_rules[count.index], "https_listener_index", count.index)].arn
   priority     = lookup(var.https_listener_rules[count.index], "priority", null)
@@ -380,7 +374,7 @@ resource "aws_lb_listener_rule" "https_listener_rule" {
 }
 
 resource "aws_lb_listener_rule" "http_tcp_listener_rule" {
-  count = local.create_lb ? length(var.http_tcp_listener_rules) : 0
+  count = length(var.http_tcp_listener_rules)
 
   listener_arn = aws_lb_listener.frontend_http_tcp[lookup(var.http_tcp_listener_rules[count.index], "http_tcp_listener_index", count.index)].arn
   priority     = lookup(var.http_tcp_listener_rules[count.index], "priority", null)
@@ -577,9 +571,9 @@ resource "aws_lb_listener_rule" "http_tcp_listener_rule" {
 }
 
 resource "aws_lb_listener" "frontend_http_tcp" {
-  count = local.create_lb ? length(var.http_tcp_listeners) : 0
+  count = length(var.http_tcp_listeners) 
 
-  load_balancer_arn = aws_lb.this[0].arn
+  load_balancer_arn = aws_lb.awselb.arn
 
   port     = var.http_tcp_listeners[count.index]["port"]
   protocol = var.http_tcp_listeners[count.index]["protocol"]
@@ -625,9 +619,9 @@ resource "aws_lb_listener" "frontend_http_tcp" {
 }
 
 resource "aws_lb_listener" "frontend_https" {
-  count = local.create_lb ? length(var.https_listeners) : 0
+  count = length(var.https_listeners) 
 
-  load_balancer_arn = aws_lb.this[0].arn
+  load_balancer_arn = aws_lb.awselb.arn
 
   port            = var.https_listeners[count.index]["port"]
   protocol        = lookup(var.https_listeners[count.index], "protocol", "HTTPS")
@@ -720,7 +714,7 @@ resource "aws_lb_listener" "frontend_https" {
 }
 
 resource "aws_lb_listener_certificate" "https_listener" {
-  count = local.create_lb ? length(var.extra_ssl_certs) : 0
+  count = length(var.extra_ssl_certs) 
 
   listener_arn    = aws_lb_listener.frontend_https[var.extra_ssl_certs[count.index]["https_listener_index"]].arn
   certificate_arn = var.extra_ssl_certs[count.index]["certificate_arn"]
